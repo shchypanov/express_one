@@ -1,0 +1,36 @@
+# Alternative: Use Cloud Build instead of GitHub Actions
+# This is triggered automatically when you push to Cloud Source Repositories
+# or connect your GitHub repo to Cloud Build
+
+steps:
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/express-api:$COMMIT_SHA', '.']
+
+  # Push to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/express-api:$COMMIT_SHA']
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'express-api'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/express-api:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--memory'
+      - '256Mi'
+      - '--min-instances'
+      - '0'
+      - '--max-instances'
+      - '2'
+
+images:
+  - 'gcr.io/$PROJECT_ID/express-api:$COMMIT_SHA'

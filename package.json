@@ -5,7 +5,10 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "docker:dev": "docker compose --profile dev up api-dev --build",
+    "docker:prod": "docker compose up --build",
+    "docker:down": "docker compose down"
   },
   "keywords": ["express", "api", "docker"],
   "author": "",

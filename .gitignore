@@ -6,4 +6,6 @@ npm-debug.log
 coverage
 .nyc_output
 dist
+key.json
+*.pem
 
