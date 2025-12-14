@@ -1,0 +1,21 @@
+### Health Check
+GET http://localhost:3000/health
+
+### API Welcome
+GET http://localhost:3000/api
+
+### Example POST (for future use)
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+  "name": "John",
+  "email": "john@example.com"
+}
+
+### Staging Health Check
+GET https://express-api-staging-XXXXX.run.app/health
+
+### Production Health Check
+GET https://express-api-prod-XXXXX.run.app/health
+

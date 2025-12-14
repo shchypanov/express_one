@@ -23,6 +23,20 @@ app.get('/api', (req, res) => {
   res.json({ message: 'Welcome to Express API' });
 });
 
+// test POST user endpoint
+app.post('/api/users', (req, res) => {
+  const {email, name} = req.body;
+
+  if(!email) {
+    return res.status(422).json({ error: 'Missing email' });
+  }
+  res.status(201).json({
+    id: 1,
+    email,
+    name
+  })
+})
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Not Found' });
