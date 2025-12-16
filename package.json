@@ -1,16 +1,18 @@
 {
   "name": "express-api",
   "version": "1.0.0",
-  "description": "Express API with Docker",
-  "main": "src/index.js",
+  "description": "Express API with Docker and TypeScript",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
     "docker:dev": "docker compose --profile dev up api-dev --build",
     "docker:prod": "docker compose up --build",
-    "docker:down": "docker compose down"
+    "docker:down": "docker compose down",
+    "typecheck": "tsc --noEmit"
   },
-  "keywords": ["express", "api", "docker"],
+  "keywords": ["express", "api", "docker", "typescript"],
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -20,7 +22,11 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.7"
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
   }
 }
-

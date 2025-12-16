@@ -4,7 +4,12 @@ FROM node:24-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci
+
+COPY tsconfig.json ./
+COPY src ./src
+
+RUN npm run build
 
 # Production stage
 FROM node:24-alpine
@@ -15,12 +20,13 @@ WORKDIR /app
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
-COPY --from=builder /app/node_modules ./node_modules
-COPY --chown=nodejs:nodejs . .
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+COPY --from=builder /app/dist ./dist
 
 USER nodejs
 
 EXPOSE 3000
 
-CMD ["node", "src/index.js"]
-
+CMD ["node", "dist/index.js"]
