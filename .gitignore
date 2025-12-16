@@ -11,3 +11,5 @@ key.json
 *.tsbuildinfo
 
 
+
+/src/generated/prisma
