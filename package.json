@@ -8,8 +8,8 @@
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
     "docker:dev": "docker compose --profile dev up api-dev --build",
-    "docker:prod": "docker compose up --build",
-    "docker:down": "docker compose down",
+    "docker:prod": "docker compose up --build ",
+    "docker:down": "docker kill $(docker ps -q) 2>/dev/null; docker compose down --remove-orphans",
     "typecheck": "tsc --noEmit"
   },
   "keywords": ["express", "api", "docker", "typescript"],
