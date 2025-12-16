@@ -12,14 +12,20 @@
     "docker:down": "docker kill $(docker ps -q) 2>/dev/null; docker compose down --remove-orphans",
     "typecheck": "tsc --noEmit"
   },
-  "keywords": ["express", "api", "docker", "typescript"],
+  "keywords": [
+    "express",
+    "api",
+    "docker",
+    "typescript"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.21.1",
     "cors": "^2.8.5",
+    "express": "^4.21.1",
     "helmet": "^8.0.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
