@@ -13,3 +13,5 @@ key.json
 
 
 /src/generated/prisma
+
+/generated/prisma

@@ -1,4 +1,5 @@
 services:
+  # Production service
   api:
     build:
       context: .
@@ -9,6 +10,8 @@ services:
       - NODE_ENV=production
       - PORT=3000
     restart: unless-stopped
+    profiles:
+      - prod
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
       interval: 30s
@@ -22,19 +25,24 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     ports:
-      - "3000:3000"
+      - "3001:3001"
+      - "5555:5555"
     environment:
       - NODE_ENV=development
-      - PORT=3000
+      - PORT=3001
     volumes:
       - ./src:/app/src:ro
     profiles:
       - dev
+    env_file:
+      - .env
+    depends_on:
+      - postgres
 
   postgres:
     image: postgres:16-alpine
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
