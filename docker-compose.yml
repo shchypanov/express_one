@@ -32,6 +32,7 @@ services:
       - PORT=3001
     volumes:
       - ./src:/app/src:ro
+      - ./prisma:/app/prisma
     profiles:
       - dev
     env_file:
