@@ -33,6 +33,7 @@ services:
     volumes:
       - ./src:/app/src:ro
       - ./prisma:/app/prisma
+      - ./generated:/app/generated
     profiles:
       - dev
     env_file:
