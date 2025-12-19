@@ -6,6 +6,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
   verifyAccessToken,
+  verifyRefreshToken,
   createRefreshToken,
 } from '../services/auth.service';
 import { config } from '../config/env';
@@ -86,4 +87,49 @@ export async function signin(req: Request<{}, {}, SigninBody>, res: Response) {
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
   return res.status(200).json({accessToken, user: {id: user.id, email, name: user.name}});
+}
+
+// POST /auth/refresh
+export async function refresh(req: Request, res: Response) {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return res.status(401).json({error: 'Unauthorized'});
+  }
+
+  const decoded = verifyRefreshToken(refreshToken);
+
+  if (!decoded) {
+    return res.status(401).json({error: 'Unauthorized'});
+  }
+
+  const refreshTokenExists = await prisma.refreshToken.findUnique({where: {token: refreshToken}});
+
+  if (!refreshTokenExists) {
+    return res.status(401).json({error: 'Unauthorized'});
+  }
+
+  if (refreshTokenExists.expiresAt < new Date()) {
+    await prisma.refreshToken.delete({where: {id: refreshTokenExists.id}})
+    res.clearCookie('refreshToken');
+    return res.status(401).json({error: 'Unauthorized'});
+  }
+
+  const accessToken = generateAccessToken(decoded.userId);
+  return res.status(200).json({accessToken});
+}
+
+// POST /auth/signout
+export async function signout(req: Request, res: Response) {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (refreshToken) {
+    // Просто пробуємо видалити, ігноруємо помилки
+    await prisma.refreshToken.deleteMany({
+      where: { token: refreshToken }
+    });
+  }
+
+  res.clearCookie('refreshToken');
+  return res.status(200).json({ message: 'Signed out successfully' });
 }
