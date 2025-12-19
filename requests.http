@@ -1,17 +1,46 @@
 ### Health Check
-GET http://localhost:3000/health
+GET http://localhost:3001/health
 
-### API Welcome
-GET http://localhost:3000/api
+###
 
-### Example POST (for future use)
-POST http://localhost:3000/api/users
+### ========== AUTH ==========
+
+### Signup
+POST http://localhost:3001/auth/signup
 Content-Type: application/json
 
 {
-  "name": "John",
-  "email": "john@example.com"
+  "email": "test@example.com",
+  "password": "secret123",
+  "name": "Test User"
 }
+
+###
+
+### Signin
+POST http://localhost:3001/auth/signin
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "secret123"
+}
+
+###
+
+### Refresh Token
+POST http://localhost:3001/auth/refresh
+Content-Type: application/json
+
+###
+
+### Signout
+POST http://localhost:3001/auth/signout
+Content-Type: application/json
+
+###
+
+### ========== OTHER ==========
 
 ### Staging Health Check
 GET https://express-api-staging-XXXXX.run.app/health
