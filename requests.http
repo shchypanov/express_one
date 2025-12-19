@@ -40,6 +40,10 @@ Content-Type: application/json
 
 ###
 
+### Profile (protected)
+GET http://localhost:3001/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc2NjE2MDA3MiwiZXhwIjoxNzY2MTYwOTcyfQ.OGQp7QT1IHnjrJr5AlwhTIqU_qvY5xVfHqr0-tA_UYc
+
 ### ========== OTHER ==========
 
 ### Staging Health Check

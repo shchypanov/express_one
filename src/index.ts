@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.routes';
+import userRoutes from './routes/user.routes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +25,7 @@ app.get('/health', (_req: Request, res: Response) => {
 });
 
 app.use('/auth', authRoutes);
+app.use(userRoutes);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {
