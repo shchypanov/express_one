@@ -7,8 +7,10 @@ COPY package*.json ./
 RUN npm ci
 
 COPY tsconfig.json ./
+COPY prisma ./prisma
 COPY src ./src
 
+RUN npx prisma generate
 RUN npm run build
 
 # Production stage
@@ -16,7 +18,6 @@ FROM node:24-alpine
 
 WORKDIR /app
 
-# Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
@@ -24,6 +25,9 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/generated ./generated
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/src/routes ./src/routes
 
 USER nodejs
 
