@@ -16,7 +16,10 @@
     "db:migrate:deploy": "docker compose --profile dev exec api-dev npx prisma migrate deploy",
     "db:reset": "docker compose --profile dev exec api-dev npx prisma migrate reset",
     "db:generate": "docker compose --profile dev exec api-dev npx prisma generate",
-    "db:studio": "docker compose --profile dev exec api-dev npx prisma studio --port 5555 --browser none"
+    "db:studio": "docker compose --profile dev exec api-dev npx prisma studio --port 5555 --browser none",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [
     "express",
@@ -51,10 +54,14 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.19.3",
     "@types/pg": "^8.16.0",
+    "@types/supertest": "^6.0.3",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
+    "@vitest/coverage-v8": "^4.0.16",
     "prisma": "^7.1.0",
+    "supertest": "^7.1.4",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^4.0.16"
   }
 }
