@@ -533,6 +533,86 @@ describe('Full Authentication Flow', () => {
 
 ---
 
+## Logging
+
+### Pino - Fast JSON Logger
+
+Pino is the fastest Node.js logger with minimal overhead.
+
+**Setup:**
+
+```typescript
+// src/lib/logger.ts
+import pino from 'pino';
+
+const isProduction = process.env.NODE_ENV === 'production';
+const isTest = process.env.NODE_ENV === 'test';
+
+export const logger = pino({
+  level: isTest ? 'silent' : (process.env.LOG_LEVEL || 'info'),
+  transport: isProduction
+    ? undefined  // JSON in production
+    : { target: 'pino-pretty', options: { colorize: true } },
+});
+```
+
+### Log Levels
+
+```
+trace → debug → info → warn → error → fatal
+```
+
+| Level | When to use |
+|-------|-------------|
+| `trace` | Detailed debugging |
+| `debug` | Development debugging |
+| `info` | Important events (startup, requests) |
+| `warn` | Potential problems |
+| `error` | Errors that need attention |
+| `fatal` | Critical errors, app crashed |
+
+### HTTP Request Logging with pino-http
+
+Replace Morgan with pino-http for consistent JSON logging:
+
+```typescript
+import pinoHttp from 'pino-http';
+import logger from './lib/logger';
+
+if (process.env.NODE_ENV !== 'test') {
+  app.use(pinoHttp({ logger }));
+}
+```
+
+### Using Logger in Code
+
+```typescript
+import logger from '../lib/logger';
+
+// Different log levels
+logger.info('User signed up', { userId: user.id });
+logger.warn('Rate limit approaching', { ip: req.ip });
+logger.error({ err }, 'Database connection failed');
+```
+
+### Output Formats
+
+**Development (pino-pretty):**
+```
+[12:34:56] INFO: Server running on port 3001
+[12:34:57] INFO: request completed
+    req: { method: "POST", url: "/auth/signup" }
+    res: { statusCode: 201 }
+    responseTime: 45
+```
+
+**Production (JSON):**
+```json
+{"level":30,"time":1734567890,"msg":"Server running on port 3001"}
+```
+
+---
+
 ## Key Learnings
 
 1. **Imports**: `import { X }` for named exports, `import X` for default exports
@@ -545,6 +625,8 @@ describe('Full Authentication Flow', () => {
 8. **JWT uniqueness**: Add `jti` claim to prevent duplicate tokens
 9. **Environment management**: Use `dotenv-cli` to load different env files per command
 10. **Database cleanup**: Clean tables in `beforeEach` respecting foreign key order
+11. **Test separation**: Use separate vitest configs for unit vs integration tests
+12. **Structured logging**: Use Pino for JSON logs in production, pino-pretty in dev
 
 ---
 
