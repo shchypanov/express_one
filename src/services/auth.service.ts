@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { config } from '../config/env';
 import prisma from '../lib/prisma';
 import { RefreshToken } from '../../generated/prisma/client';
@@ -28,7 +29,7 @@ export function generateAccessToken(userId: number): string {
 
 export function generateRefreshToken(userId: number): string {
   return jwt.sign(
-    { userId },
+    { userId, jti: crypto.randomUUID() },  // jti (JWT ID) робить кожен токен унікальним
     config.jwtRefreshSecret,
     { expiresIn: config.jwtRefreshExpiresIn }
   );

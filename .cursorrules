@@ -15,3 +15,9 @@ Project focus:
 - TypeScript-first patterns
 - Clean folder structure
 - Error handling, auth, validation, logging
+
+Documentation:
+- After completing a topic or feature, update LEARNING_NOTES.md in the project root.
+- Document what was learned, key concepts, and code patterns.
+- Keep notes in English.
+- This helps track progress and serves as a reference.
