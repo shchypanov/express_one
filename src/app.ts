@@ -1,13 +1,15 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import morgan from 'morgan';
+import pinoHttp from 'pino-http';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import cookieParser from 'cookie-parser';
+import logger from './lib/logger';
 import { errorHandler } from './middleware/error.middleware';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
+
 
 const app = express();
 
@@ -15,9 +17,8 @@ const app = express();
 app.use(helmet());
 app.use(cors());
 
-// Вимикаємо логування в тестах
 if (process.env.NODE_ENV !== 'test') {
-  app.use(morgan('combined'));
+  app.use(pinoHttp({ logger }));
 }
 
 app.use(express.json());

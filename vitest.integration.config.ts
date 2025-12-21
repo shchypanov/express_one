@@ -8,14 +8,19 @@ export default defineConfig({
     // Середовище виконання
     environment: 'node',
 
-    // Патерн для тестових файлів (тільки unit тести)
-    include: ['src/**/*.test.ts'],
+    // Тільки integration тести
+    include: ['src/tests/**/*.test.ts'],
 
-    // Виключити integration тести
-    exclude: ['src/tests/**', 'node_modules'],
+    // Setup file для очищення БД
+    setupFiles: ['src/tests/setup.ts'],
 
     // Таймаут для тестів (мс)
-    testTimeout: 10000,
+    testTimeout: 15000,
+
+    // Запускати тести послідовно (важливо для БД)
+    sequence: {
+      concurrent: false,
+    },
 
     // Coverage
     coverage: {
