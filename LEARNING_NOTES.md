@@ -426,6 +426,111 @@ app.listen(PORT);
 - **401** Unauthorized: Missing or invalid auth
 - **404** Not Found: Route doesn't exist
 
+### Integration Tests with Test Database
+
+For integration tests that need a real database:
+
+**1. Separate Docker Compose for test DB:**
+
+```yaml
+# docker-compose.test.yml
+services:
+  postgres-test:
+    image: postgres:17-alpine
+    ports:
+      - "5433:5432"  # Different port!
+    environment:
+      POSTGRES_DB: express_api_test
+```
+
+**2. Separate environment file (`.env.test`):**
+
+```bash
+DATABASE_URL="postgresql://postgres:postgres@localhost:5433/express_api_test"
+JWT_ACCESS_SECRET=test-secret
+NODE_ENV=test
+```
+
+**3. Load env with dotenv-cli:**
+
+```json
+"scripts": {
+  "test": "dotenv -e .env.test -- vitest",
+  "test:db:up": "docker compose -f docker-compose.test.yml up -d",
+  "test:db:migrate": "dotenv -e .env.test -- npx prisma migrate deploy"
+}
+```
+
+**4. Clean database before each test:**
+
+```typescript
+// src/tests/setup.ts
+import { beforeEach, afterAll } from 'vitest';
+import prisma from '../lib/prisma';
+
+beforeEach(async () => {
+  await prisma.refreshToken.deleteMany();
+  await prisma.user.deleteMany();
+});
+
+afterAll(async () => {
+  await prisma.$disconnect();
+});
+```
+
+### JWT `jti` Claim for Unique Tokens
+
+When generating JWTs rapidly (like in tests), tokens can be identical if created in the same second. Add `jti` (JWT ID) for uniqueness:
+
+```typescript
+import crypto from 'crypto';
+
+export function generateRefreshToken(userId: number): string {
+  return jwt.sign(
+    { userId, jti: crypto.randomUUID() },  // Unique ID
+    config.jwtRefreshSecret,
+    { expiresIn: config.jwtRefreshExpiresIn }
+  );
+}
+```
+
+### Full Integration Test Example
+
+```typescript
+describe('Full Authentication Flow', () => {
+  it('should complete signup → signin → profile → signout', async () => {
+    // 1. Signup
+    const signup = await request(app)
+      .post('/auth/signup')
+      .send({ email: 'test@example.com', password: 'pass123', name: 'Test' });
+    
+    expect(signup.status).toBe(201);
+    const cookies = signup.headers['set-cookie'];
+    
+    // 2. Access protected route
+    const profile = await request(app)
+      .get('/profile')
+      .set('Authorization', `Bearer ${signup.body.accessToken}`);
+    
+    expect(profile.status).toBe(200);
+    
+    // 3. Refresh token
+    const refresh = await request(app)
+      .post('/auth/refresh')
+      .set('Cookie', cookies);
+    
+    expect(refresh.status).toBe(200);
+    
+    // 4. Signout
+    const signout = await request(app)
+      .post('/auth/signout')
+      .set('Cookie', cookies);
+    
+    expect(signout.status).toBe(200);
+  });
+});
+```
+
 ---
 
 ## Key Learnings
@@ -436,6 +541,10 @@ app.listen(PORT);
 4. **Error handling**: Use global error handler, not try-catch in every controller
 5. **Testing**: Separate app from server for testability
 6. **Documentation**: Keep Swagger in sync with actual behavior
+7. **Test isolation**: Use separate test database to avoid affecting dev data
+8. **JWT uniqueness**: Add `jti` claim to prevent duplicate tokens
+9. **Environment management**: Use `dotenv-cli` to load different env files per command
+10. **Database cleanup**: Clean tables in `beforeEach` respecting foreign key order
 
 ---
 
