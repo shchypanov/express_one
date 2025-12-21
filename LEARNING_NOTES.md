@@ -613,6 +613,81 @@ logger.error({ err }, 'Database connection failed');
 
 ---
 
+## Rate Limiting
+
+### What is Rate Limiting?
+
+Rate limiting restricts the number of requests a client can make within a time window. Protects against:
+- **Brute-force attacks** on login
+- **DoS attacks** (Denial of Service)
+- **API abuse**
+
+### Implementation with express-rate-limit
+
+```typescript
+import rateLimit from 'express-rate-limit';
+
+const isTest = process.env.NODE_ENV === 'test';
+
+// Strict limit for auth (brute-force protection)
+export const authLimiter = rateLimit({
+  skip: () => isTest,
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts
+  message: { error: 'Too many attempts, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// General API limit
+export const apiLimiter = rateLimit({
+  skip: () => isTest,
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { error: 'Too many requests, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+```
+
+### Applying Rate Limiters
+
+```typescript
+// app.ts - General limit for all routes
+app.use(apiLimiter);
+
+// auth.routes.ts - Strict limit for auth
+router.post('/signin', authLimiter, validate(signinSchema), asyncHandler(signin));
+router.post('/signup', authLimiter, validate(signupSchema), asyncHandler(signup));
+```
+
+### Response Headers
+
+```
+RateLimit-Limit: 5           # Maximum requests allowed
+RateLimit-Remaining: 3       # Requests remaining
+RateLimit-Reset: 1734567890  # Unix timestamp when limit resets
+Retry-After: 874             # Seconds until retry allowed
+```
+
+### HTTP 429 Response
+
+```json
+{
+  "error": "Too many attempts, please try again after 15 minutes"
+}
+```
+
+### Skip in Tests
+
+Always skip rate limiting in tests to avoid flaky tests:
+
+```typescript
+skip: () => process.env.NODE_ENV === 'test'
+```
+
+---
+
 ## Key Learnings
 
 1. **Imports**: `import { X }` for named exports, `import X` for default exports
@@ -627,6 +702,7 @@ logger.error({ err }, 'Database connection failed');
 10. **Database cleanup**: Clean tables in `beforeEach` respecting foreign key order
 11. **Test separation**: Use separate vitest configs for unit vs integration tests
 12. **Structured logging**: Use Pino for JSON logs in production, pino-pretty in dev
+13. **Rate limiting**: Protect auth endpoints with stricter limits than general API
 
 ---
 

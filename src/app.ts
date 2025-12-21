@@ -9,7 +9,7 @@ import logger from './lib/logger';
 import { errorHandler } from './middleware/error.middleware';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
-
+import { apiLimiter } from './middleware/rateLimiter.middleware';
 
 const app = express();
 
@@ -24,6 +24,7 @@ if (process.env.NODE_ENV !== 'test') {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(apiLimiter);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // ========== ROUTES ==========

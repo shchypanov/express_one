@@ -3,6 +3,7 @@ import { signup, signin, refresh, signout } from '../controllers/auth.controller
 import { asyncHandler } from '../middleware/error.middleware';
 import { validate } from '../middleware/validation.middleware';
 import { signupSchema, signinSchema } from '../validation/auth.validation';
+import { authLimiter } from '../middleware/rateLimiter.middleware';
 
 const router = Router();
 
@@ -99,7 +100,7 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/signup', validate(signupSchema), asyncHandler(signup));
+router.post('/signup', authLimiter, validate(signupSchema), asyncHandler(signup));
 
 /**
  * @swagger
@@ -144,7 +145,7 @@ router.post('/signup', validate(signupSchema), asyncHandler(signup));
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/signin', validate(signinSchema), asyncHandler(signin));
+router.post('/signin', authLimiter, validate(signinSchema), asyncHandler(signin));
 
 /**
  * @swagger

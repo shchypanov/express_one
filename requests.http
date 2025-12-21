@@ -10,7 +10,7 @@ POST http://localhost:3001/auth/signup
 Content-Type: application/json
 
 {
-  "email": "teste@xample.com",
+  "email": "teste2@xample.com",
   "password": "secret",
   "name": "Test User"
 }
@@ -22,7 +22,7 @@ POST http://localhost:3001/auth/signin
 Content-Type: application/json
 
 {
-  "email": "test@e@xample.com",
+  "email": "teste2@xample.com",
   "password": "secret123"
 }
 
