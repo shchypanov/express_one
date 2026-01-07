@@ -40,24 +40,41 @@ npm run dev
 
 ---
 
-## 🐳 Docker Commands
+## 📜 NPM Scripts
 
+| Script | Description |
+|--------|-------------|
+| `npm run docker:dev` | Start dev server with hot reload (Docker) |
+| `npm run docker:down` | Stop all containers |
+| `npm run docker:shell` | Enter Docker container shell |
+| `npm run dev` | Start dev server locally (no Docker) |
+| `npm run build` | Build TypeScript to JavaScript |
+| `npm run start` | Start production server |
+| `npm test` | Run tests in watch mode |
+| `npm run test:run` | Run tests once |
+
+---
+
+## 🐚 Docker Shell Commands
+
+Enter the container first:
 ```bash
-# Development (with hot reload)
-npm run docker:dev
-
-# Test production build locally
-npm run docker:prod
-
-# Stop all containers
-npm run docker:down
-
-# View running containers
-docker ps
-
-# View logs
-docker compose logs -f
+npm run docker:shell
 ```
+
+Then run commands inside:
+
+| Command | Description |
+|---------|-------------|
+| `npx prisma migrate dev --name <name>` | Create and apply new migration |
+| `npx prisma migrate deploy` | Apply pending migrations |
+| `npx prisma migrate reset` | Reset database (⚠️ deletes data) |
+| `npx prisma generate` | Regenerate Prisma Client |
+| `npx prisma studio` | Open database GUI (port 5555) |
+| `npx prisma db push` | Push schema without migration |
+| `npx prisma db pull` | Pull schema from database |
+
+**Exit shell:** `exit` or `Ctrl+D`
 
 ---
 
@@ -239,24 +256,41 @@ npm run dev
 
 ---
 
-## 🐳 Docker команди
+## 📜 NPM Скрипти
 
+| Скрипт | Опис |
+|--------|------|
+| `npm run docker:dev` | Запустити dev сервер з hot reload (Docker) |
+| `npm run docker:down` | Зупинити всі контейнери |
+| `npm run docker:shell` | Зайти в shell контейнера |
+| `npm run dev` | Запустити dev сервер локально (без Docker) |
+| `npm run build` | Збілдити TypeScript в JavaScript |
+| `npm run start` | Запустити production сервер |
+| `npm test` | Запустити тести в watch режимі |
+| `npm run test:run` | Запустити тести один раз |
+
+---
+
+## 🐚 Команди в Docker Shell
+
+Спочатку зайди в контейнер:
 ```bash
-# Розробка (з hot reload)
-npm run docker:dev
-
-# Тест production build локально
-npm run docker:prod
-
-# Зупинити всі контейнери
-npm run docker:down
-
-# Переглянути запущені контейнери
-docker ps
-
-# Переглянути логи
-docker compose logs -f
+npm run docker:shell
 ```
+
+Потім виконуй команди всередині:
+
+| Команда | Опис |
+|---------|------|
+| `npx prisma migrate dev --name <name>` | Створити і застосувати нову міграцію |
+| `npx prisma migrate deploy` | Застосувати pending міграції |
+| `npx prisma migrate reset` | Скинути базу (⚠️ видаляє дані) |
+| `npx prisma generate` | Перегенерувати Prisma Client |
+| `npx prisma studio` | Відкрити GUI для бази (порт 5555) |
+| `npx prisma db push` | Push схеми без міграції |
+| `npx prisma db pull` | Витягнути схему з бази |
+
+**Вийти з shell:** `exit` або `Ctrl+D`
 
 ---
 
