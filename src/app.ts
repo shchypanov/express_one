@@ -15,7 +15,10 @@ const app = express();
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000'], // Frontend URLs
+  credentials: true, // Дозволяє передачу cookies
+}));
 
 if (process.env.NODE_ENV !== 'test') {
   app.use(pinoHttp({ logger }));
@@ -45,3 +48,5 @@ app.use((_req: Request, res: Response) => {
 app.use(errorHandler);
 
 export default app;
+
+

@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { signup, signin, refresh, signout } from '../controllers/auth.controller';
+import { signup, signin, refresh, signout, getMe } from '../controllers/auth.controller';
 import { asyncHandler } from '../middleware/error.middleware';
 import { validate } from '../middleware/validation.middleware';
 import { signupSchema, signinSchema } from '../validation/auth.validation';
 import { authLimiter } from '../middleware/rateLimiter.middleware';
+import { authMiddleware } from '../middleware/auth.middleware';
 
 const router = Router();
 
@@ -186,5 +187,30 @@ router.post('/refresh', asyncHandler(refresh));
  *               $ref: '#/components/schemas/MessageResponse'
  */
 router.post('/signout', asyncHandler(signout));
+
+/**
+ * @swagger
+ * /auth/me:
+ *   get:
+ *     summary: Get current user profile
+ *     description: Returns the authenticated user's profile data
+ *     tags: [Auth]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User profile data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get('/me', authMiddleware, asyncHandler(getMe));
 
 export default router;

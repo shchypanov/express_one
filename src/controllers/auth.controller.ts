@@ -134,3 +134,29 @@ export async function signout(req: Request, res: Response) {
   res.clearCookie('refreshToken');
   return res.status(200).json({ message: 'Signed out successfully' });
 }
+
+// GET /auth/me
+export async function getMe(req: Request, res: Response) {
+  const userId = req.userId;
+
+  if (!userId) {
+    throw Unauthorized('Unauthorized');
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      createdAt: true,
+      updatedAt: true,
+    }
+  });
+
+  if (!user) {
+    throw Unauthorized('User not found');
+  }
+
+  return res.status(200).json(user);
+}

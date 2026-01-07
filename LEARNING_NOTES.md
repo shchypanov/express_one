@@ -703,7 +703,131 @@ skip: () => process.env.NODE_ENV === 'test'
 11. **Test separation**: Use separate vitest configs for unit vs integration tests
 12. **Structured logging**: Use Pino for JSON logs in production, pino-pretty in dev
 13. **Rate limiting**: Protect auth endpoints with stricter limits than general API
+14. **GET /auth/me endpoint**: Essential for SPAs to verify tokens and get user data
+
+---
+
+## React Frontend Integration
+
+### Overview
+
+A React frontend was created as a separate project (`react-frontend/`) to work with this backend.
+
+### Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| React 19 | UI library |
+| TypeScript | Type safety |
+| Vite 7 | Build tool |
+| React Router 7 | Client-side routing |
+| TanStack Query | Data fetching & caching |
+| Zustand | State management |
+| Tailwind CSS 4 | Styling |
+| Axios | HTTP client |
+
+### API Endpoints Used by Frontend
+
+| Frontend calls | Backend endpoint | Purpose |
+|----------------|------------------|---------|
+| `POST /api/auth/signin` | `POST /auth/signin` | Login |
+| `POST /api/auth/signup` | `POST /auth/signup` | Register |
+| `POST /api/auth/signout` | `POST /auth/signout` | Logout |
+| `POST /api/auth/refresh` | `POST /auth/refresh` | Token refresh |
+| `GET /api/auth/me` | `GET /auth/me` | Get current user |
+
+### CORS Configuration
+
+For frontend to work with cookies (refresh token), CORS must be configured:
+
+```typescript
+app.use(cors({
+  origin: ['http://localhost:5173'],
+  credentials: true, // Required for cookies!
+}));
+```
+
+### Vite Proxy
+
+Frontend uses Vite proxy to avoid CORS in development:
+
+```typescript
+// vite.config.ts
+proxy: {
+  '/api': {
+    target: 'http://localhost:3001',
+    changeOrigin: true,
+    rewrite: (path) => path.replace(/^\/api/, ''),
+  },
+}
+```
+
+This means:
+- Frontend: `POST /api/auth/signin`
+- Proxy rewrites to: `POST http://localhost:3001/auth/signin`
+
+### New Backend Endpoint: GET /auth/me
+
+Added to return current user data:
+
+```typescript
+// controllers/auth.controller.ts
+export async function getMe(req: Request, res: Response) {
+  const userId = req.userId;
+  
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      createdAt: true,
+      updatedAt: true,
+    }
+  });
+
+  return res.status(200).json(user);
+}
+
+// routes/auth.routes.ts
+router.get('/me', authMiddleware, asyncHandler(getMe));
+```
+
+### Frontend Project Structure
+
+```
+react-frontend/
+├── src/
+│   ├── components/        # Reusable UI components
+│   │   ├── ui/           # Base components (Button, Input, etc.)
+│   │   ├── ProtectedRoute.tsx  # Auth guard
+│   │   └── GuestRoute.tsx      # Guest-only guard
+│   ├── hooks/            # Custom React hooks
+│   ├── lib/              # Utilities (axios config)
+│   ├── pages/            # Page components
+│   ├── services/         # API service functions
+│   ├── stores/           # Zustand state stores
+│   └── types/            # TypeScript types
+├── README.md             # Quick start guide
+└── DOCS.md              # Detailed React concepts
+```
+
+### Running Both Projects
+
+```bash
+# Terminal 1 - Backend
+cd exoress_one
+npm run dev
+
+# Terminal 2 - Frontend  
+cd react-frontend
+npm run dev
+
+# Open http://localhost:5173
+```
 
 ---
 
 *Last updated: December 2024*
+
+
